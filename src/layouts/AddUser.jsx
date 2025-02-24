@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
-const AddUser = () => {
+const AddUser = ({ state }) => {
 	const { token } = useParams();
 	const [name, setname] = useState("");
 	const [email, setemail] = useState("");
@@ -30,8 +30,11 @@ const AddUser = () => {
 				},
 			);
 			setsuccess(response.data.message);
+			setTimeout(() => {
+				state(false);
+			}, 3000);
 		} catch (error) {
-			console.log('error');
+			console.log("error");
 		} finally {
 			setloading(false);
 		}

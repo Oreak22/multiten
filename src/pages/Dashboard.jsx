@@ -13,6 +13,8 @@ const Dashboard = () => {
 	const { token } = useParams();
 	const [searchResult, setSearchResult] = useState([]);
 	const [showAddUser, setShowAddUser] = useState(false);
+	const [deleting, setDeleting] = useState(false);
+	const [success, setSuccess] = useState("");
 	const navigate = useNavigate();
 
 	const otherUsers = useMemo(async () => {
@@ -27,19 +29,21 @@ const Dashboard = () => {
 					},
 				);
 				const filteredData = await others.data.filter(
-					(user) => user.id !== data._id,
+					(user) => user.email !== data.email,
 				);
 				return setSearchResult(filteredData);
-			} catch (err) {
-			}
+			} catch (err) {}
 		}
-	}, [SearchInput]);
+	}, [SearchInput, deleting, showAddUser]);
 	useEffect(() => {
 		setLoading(true);
 		axios
-			.get("https://multi-tenancy-system-server-2.onrender.com/api/users/fetch", {
-				headers: { Authorization: `Bearer ${token}` },
-			})
+			.get(
+				"https://multi-tenancy-system-server-2.onrender.com/api/users/fetch",
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				},
+			)
 			.then((response) => {
 				// handle success
 				setData(response.data);
@@ -57,6 +61,21 @@ const Dashboard = () => {
 				// always executed
 			});
 	}, []);
+
+	const handleDeleteUser = async (userId) => {
+		setDeleting(true);
+		try {
+			const del = await axios.delete(
+				`https://multi-tenancy-system-server-2.onrender.com/api/users/delete/${userId}`,
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				},
+			);
+		} catch (err) {
+		} finally {
+			setDeleting(false);
+		}
+	};
 
 	if (loading || error) {
 		return (
@@ -92,20 +111,35 @@ const Dashboard = () => {
 								<SearchIcon size={20} />
 							</button>
 						</div>
-						<div className='mt-2' >
+						<div className='mt-2'>
+							<h2 className='font-bold'>Users on this space</h2>
 							{searchResult == [] ? (
-								<p className=''> No users found</p>
+								<p className='mb-5'> No users found</p>
 							) : (
 								searchResult.map((user) => (
-									<div className='' key={user.email}>
+									<div
+										className='capitalize border-b-2 border-blue-500 p-2 shadow-blue-600 shadow-sm mb-1 flex justify-between'
+										key={user.email}
+									>
 										{user.name}
+										{data.role == "ADMIN" && (
+											<div className='flex g-4'>
+												<button
+													className='bg-red-500 hover:bg-red-300 cursor-pointer px-3 py-2 text-white rounded-sm disabled:bg-red-200 disabled:cursor-not-allowed'
+													onClick={() => handleDeleteUser(user.id)}
+													disabled={deleting}
+												>
+													Delete
+												</button>
+											</div>
+										)}
 									</div>
 								))
 							)}
 						</div>
 						{data.role == "ADMIN" && (
 							<>
-								{showAddUser && <AddUser />}
+								{showAddUser && <AddUser state={setShowAddUser} />}
 								<div className='text-center mt-5'>
 									<button
 										className='bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded'
