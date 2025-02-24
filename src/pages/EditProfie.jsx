@@ -18,13 +18,11 @@ const EditProfie = () => {
 			const res = await axios.get("https://multi-tenancy-system-server-2.onrender.com/api/users/fetch", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log(res.data);
 			setData(res.data);
 			setName(res.data.name);
 			setEmail(res.data.email);
 		} catch (error) {
 			setError(error.message);
-			console.log(error);
 		}
 	};
 
@@ -43,11 +41,9 @@ const EditProfie = () => {
 				},
 			);
 
-			console.log(res.data);
 			setData(res.data.user)
             sertSuccess(res.data.message);
 		} catch (error) {
-			console.log(error);
 			setError(error.response.data.error);
 		} finally {
 			setLoading(false);

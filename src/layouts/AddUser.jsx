@@ -29,10 +29,9 @@ const AddUser = () => {
 					headers: { Authorization: `Bearer ${token}` },
 				},
 			);
-			console.log(response.data);
 			setsuccess(response.data.message);
 		} catch (error) {
-			console.log(error);
+			console.log('error');
 		} finally {
 			setloading(false);
 		}

@@ -12,11 +12,9 @@ const Login = ({ tenantId }) => {
 				"https://multi-tenancy-system-server-2.onrender.com/api/auth/login",
 				values,
 			);
-			console.log(responce);
 			localStorage.setItem("token", responce.data.token);
 			navigate(`/dashboard/${responce.data.token}`);
 		} catch (err) {
-			console.log(err);
 			setError(err.response.data.error);
 		}
 	};
@@ -58,7 +56,6 @@ const Login = ({ tenantId }) => {
 							password: values.password,
 						});
 					} catch (err) {
-						console.log(err);
 					} finally {
 						setSubmitting(false);
 					}

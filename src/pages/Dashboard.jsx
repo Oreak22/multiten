@@ -29,10 +29,8 @@ const Dashboard = () => {
 				const filteredData = await others.data.filter(
 					(user) => user.id !== data._id,
 				);
-				console.log(filteredData);
 				return setSearchResult(filteredData);
 			} catch (err) {
-				console.log(err);
 			}
 		}
 	}, [SearchInput]);
@@ -94,7 +92,7 @@ const Dashboard = () => {
 								<SearchIcon size={20} />
 							</button>
 						</div>
-						<div className='mt-2' onClick={() => console.log(searchResult)}>
+						<div className='mt-2' >
 							{searchResult == [] ? (
 								<p className=''> No users found</p>
 							) : (

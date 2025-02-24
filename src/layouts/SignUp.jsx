@@ -10,13 +10,11 @@ const SignUp = ({ setState }) => {
 	const handleRegister = async (values) => {
 		try {
 			const responce = await axios.post(url, values);
-			console.log(responce);
 			setErrorMessage("");
 			setState("signIn");
 			navigate(`/${responce.data.tenantId}`);
 		} catch (err) {
 			setErrorMessage(err.response.data.error);
-			console.log(err);
 		}
 	};
 	return (
@@ -63,7 +61,6 @@ const SignUp = ({ setState }) => {
 							password: values.password,
 						});
 					} catch (err) {
-						console.log(err);
 					} finally {
 						setSubmitting(false);
 					}
