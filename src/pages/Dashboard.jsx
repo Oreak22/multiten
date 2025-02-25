@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { SearchIcon } from "lucide-react";
 import AddUser from "../layouts/AddUser";
+const bcrypt = e
 
 const Dashboard = () => {
 	const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ const Dashboard = () => {
 		setDeleting(true);
 		try {
 			await axios.delete(
-				`https://multi-tenancy-system-server-2.onrender.com/api/users/delete/${userId}`,
+				`http://localhost:3001/api/users/delete/${userId}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				},
