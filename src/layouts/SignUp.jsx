@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const SignUp = ({ setState }) => {
 	const [errorMessage, setErrorMessage] = React.useState("");
-	const url = "http://localhost:3001/api/tenants/create";
+	const url = "https://multi-tenancy-system-server-2.onrender.com/api/tenants/create";
 	const navigate = useNavigate();
 
 	const handleRegister = async (values) => {
