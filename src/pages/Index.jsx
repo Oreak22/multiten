@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import SignUp from "../layouts/SignUp";
 import Login from "../layouts/Login";
 
@@ -40,6 +40,9 @@ const Index = () => {
 				) : (
 					<SignUp setState={setAction} />
 				)}
+				<div className='text-right m-2'>
+					<Link to='/resetpassword'>Forgot password?</Link>
+				</div>
 			</div>
 		</div>
 	);

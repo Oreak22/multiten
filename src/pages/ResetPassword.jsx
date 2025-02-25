@@ -10,7 +10,6 @@ const ResetPassword = () => {
 			const response = await axios
 				.post("http://localhost:3001/api/auth/resetpassword", value)
 				.then((response) => {
-					console.log(response.data);
 					setresponse(response.data.status);
 				});
 		} catch (error) {
@@ -71,8 +70,7 @@ const ResetPassword = () => {
 							});
 						} catch (err) {
 						} finally {
-							console.log("Done:");
-							// setSubmitting(false);
+							setSubmitting(false);
 						}
 					}}
 				>

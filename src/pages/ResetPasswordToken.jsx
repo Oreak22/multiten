@@ -6,22 +6,21 @@ import axios from "axios";
 const ResetPasswordToken = () => {
 	const { token } = useParams();
 	const [response, setresponse] = useState("");
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [validated, setValidated] = useState(true);
+	const [success, setsuccess] = useState("");
 
 	const handleReset = async (vlaue) => {
 		try {
-			axios
+			const change = await axios
 				.post("http://localhost:3001/api/auth/changepassword", {
 					newPassword: vlaue,
 					token,
 				})
 				.then((res) => {
-                    console.log(res.data);
-					setresponse(res.data.message);
+					setsuccess(res.data.message);
 				});
 		} catch (err) {
-            console.log(err);
 			setresponse(err.response.data.message);
 			setLoading(false);
 		}
@@ -51,6 +50,9 @@ const ResetPasswordToken = () => {
 							{response && (
 								<div className='text-center mb-6 text-red-800'>{response}</div>
 							)}
+							{success && (
+								<div className='text-center mb-6 text-green-800'>{success}</div>
+							)}
 
 							<div className='w-full max-w-lg shadow-md mt-3 bg-white p-6 rounded-md'>
 								<Formik
@@ -74,13 +76,12 @@ const ResetPasswordToken = () => {
 									onSubmit={async (values, { setSubmitting }) => {
 										setSubmitting(true);
 										try {
-											await handleReset({
-												password: values.password,
-											});
+											await handleReset(values.password);
+											values.password = "";
+											values.confirmPassword = "";
 										} catch (err) {
 											console.error("Error resetting password:", err);
 										} finally {
-											console.log("Password reset process completed.");
 											setSubmitting(false);
 										}
 									}}
@@ -120,7 +121,10 @@ const ResetPasswordToken = () => {
 											<div className='text-center'>
 												<button
 													type='submit'
-													disabled={isSubmitting}
+													disabled={
+														isSubmitting ||
+														success == "Password reset successfully"
+													}
 													className='w-full bg-gray-900 text-white py-2 px-4 rounded-md font-semibold hover:bg-gray-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed'
 												>
 													{isSubmitting ? "Processing..." : "Reset Password"}
@@ -129,6 +133,9 @@ const ResetPasswordToken = () => {
 										</Form>
 									)}
 								</Formik>
+								<div className='text-right m-2'>
+									<Link to='/'>Return to login</Link>
+								</div>
 							</div>
 						</>
 					)}

@@ -4,7 +4,6 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { SearchIcon } from "lucide-react";
 import AddUser from "../layouts/AddUser";
-const bcrypt = e
 
 const Dashboard = () => {
 	const [loading, setLoading] = useState(true);
