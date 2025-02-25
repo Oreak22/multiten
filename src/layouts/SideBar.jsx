@@ -1,67 +1,73 @@
 import React, { useEffect, useState } from "react";
-import {
-	Menu,
-	LayoutDashboard,
-	Users,
-	Settings,
-	LogOutIcon,
-	LogOut,
-} from "lucide-react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { LayoutDashboard, Users, LogOut, Menu } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
-const SideBar = ({ isOpen }) => {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [token, setToken] = useState("");
-
+const SidebarAndBottomNav = () => {
+	const [token, setToken] = useState("");
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const navigate = useNavigate();
+
 	const logout = () => {
 		localStorage.clear();
 		navigate("/");
 	};
 
-	const toggleSidebarHandler = () => {
-		setIsSidebarOpen(!isSidebarOpen);
-	};
 	useEffect(() => {
 		const checkToken = async () => {
-			const token = localStorage.getItem("token");
-			if (!token) {
+			const storedToken = localStorage.getItem("token");
+			if (!storedToken) {
 				navigate("/");
 			} else {
-				setToken(token);
+				setToken(storedToken);
 			}
 		};
 		checkToken();
-	}, []);
-	return (
-		<div
-			className={`bg-gray-900 text-white h-screen p-5 ${
-				isSidebarOpen ? "w-64" : "w-20"
-			} transition-all duration-300`}
-		>
-			<button onClick={toggleSidebarHandler} className='mb-5'>
-				<Menu size={24} />
-			</button>
-			<nav className='flex flex-col space-y-4'>
-				<Link
-					to={`/dashboard/${token}`}
-					className='flex items-center space-x-3'
-				>
-					<LayoutDashboard />
-					{isSidebarOpen && <span>Dashboard</span>}
-				</Link>
-				<Link to={`/profile/${token}`} className='flex items-center space-x-3'>
-					<Users />
-					{isSidebarOpen && <span>Users</span>}
-				</Link>
+	}, [navigate]);
 
-				<button onClick={logout} className='flex items-center space-x-3'>
-					<LogOut />
-					{isSidebarOpen && <span>Logout</span>}
+	return (
+		<>
+			{/* Sidebar for medium screens */}
+			<div className='hidden md:flex md:flex-col md:w-64 bg-gray-900 text-white h-screen p-5 transition-all duration-300'>
+			
+				<nav className='flex flex-col space-y-4'>
+					<Link
+						to={`/dashboard/${token}`}
+						className='flex items-center space-x-3'
+					>
+						<LayoutDashboard />
+						<span>Dashboard</span>
+					</Link>
+					<Link
+						to={`/profile/${token}`}
+						className='flex items-center space-x-3'
+					>
+						<Users />
+						<span>Users</span>
+					</Link>
+					<button onClick={logout} className='flex items-center space-x-3'>
+						<LogOut />
+						<span>Logout</span>
+					</button>
+				</nav>
+			</div>
+
+			{/* Bottom Navigation for large screens */}
+			<div className='fixed bottom-0 left-0 w-full bg-gray-900 text-white flex justify-around py-3 shadow-lg md:hidden'>
+				<Link to={`/dashboard/${token}`} className='flex flex-col items-center'>
+					<LayoutDashboard size={24} />
+					<span className='text-xs'>Dashboard</span>
+				</Link>
+				<Link to={`/profile/${token}`} className='flex flex-col items-center'>
+					<Users size={24} />
+					<span className='text-xs'>Users</span>
+				</Link>
+				<button onClick={logout} className='flex flex-col items-center'>
+					<LogOut size={24} />
+					<span className='text-xs'>Logout</span>
 				</button>
-			</nav>
-		</div>
+			</div>
+		</>
 	);
 };
 
-export default SideBar;
+export default SidebarAndBottomNav;
