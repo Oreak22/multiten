@@ -5,21 +5,25 @@ import { useNavigate } from "react-router-dom";
 
 const SignUp = ({ setState }) => {
 	const [errorMessage, setErrorMessage] = React.useState("");
-	const url = "https://multi-tenancy-system-server-2.onrender.com/api/tenants/create";
+	const url = "http://localhost:3001/api/tenants/create";
 	const navigate = useNavigate();
+
 	const handleRegister = async (values) => {
 		try {
-			const responce = await axios.post(url, values);
+			const response = await axios.post(url, values);
 			setErrorMessage("");
 			setState("signIn");
-			navigate(`/${responce.data.tenantId}`);
+			navigate(`/${response.data.tenantId}`);
 		} catch (err) {
 			setErrorMessage(err.response.data.error);
 		}
 	};
+
 	return (
-		<div className='w-[100%]'>
-			<h1 className='font-bold text-center'>Create Your Organization </h1>
+		<div className='w-full max-w-md mx-auto bg-white p-3 rounded-lg'>
+			<h1 className='text-2xl font-bold text-center mb-4'>
+				Create Your Organization
+			</h1>
 			{errorMessage && (
 				<p className='text-red-500 text-center'>{errorMessage}</p>
 			)}
@@ -67,72 +71,68 @@ const SignUp = ({ setState }) => {
 				}}
 			>
 				{({ isSubmitting }) => (
-					<Form>
-						<div className='w-full flex flex-col gap-2'>
-							<label htmlFor='' className='px-2 font-bold '>
-								Organization Name
-							</label>
+					<Form className='space-y-4'>
+						<div>
+							<label className='block font-semibold'>Organization Name</label>
 							<Field
 								type='text'
 								name='organizationName'
-								className='pt-2 px-3 border-b outline-0 border-black'
+								className='w-full p-2 border rounded-md outline-none focus:ring-2 focus:ring-gray-400'
 							/>
 							<ErrorMessage
 								name='organizationName'
 								component='small'
-								className='text-red-500 mx-2'
+								className='text-red-500'
 							/>
 						</div>
-						<div className='w-full flex flex-col gap-2'>
-							<label htmlFor='' className='px-2 font-bold '>
-								Admin Name
-							</label>
+
+						<div>
+							<label className='block font-semibold'>Admin Name</label>
 							<Field
 								type='text'
 								name='adminName'
-								className='pt-2 px-3 border-b outline-0 border-black'
+								className='w-full p-2 border rounded-md outline-none focus:ring-2 focus:ring-gray-400'
 							/>
 							<ErrorMessage
 								name='adminName'
 								component='small'
-								className='text-red-500 mx-2'
+								className='text-red-500'
 							/>
 						</div>
-						<div className='w-full flex flex-col gap-2'>
-							<label htmlFor='' className='px-2 font-bold '>
-								Your Email
-							</label>
+
+						<div>
+							<label className='block font-semibold'>Your Email</label>
 							<Field
 								type='email'
 								name='email'
-								className='pt-2 px-3 border-b outline-0 border-black'
+								className='w-full p-2 border rounded-md outline-none focus:ring-2 focus:ring-gray-400'
 							/>
 							<ErrorMessage
 								name='email'
 								component='small'
-								className='text-red-500 mx-2'
+								className='text-red-500'
 							/>
 						</div>
-						<div className='w-full flex flex-col gap-2 mb-3'>
-							<label htmlFor='' className='px-2 font-bold '>
-								Create Password
-							</label>
+
+						<div>
+							<label className='block font-semibold'>Create Password</label>
 							<Field
 								type='password'
 								name='password'
-								className='pt-2 px-3 border-b outline-0 border-black'
+								className='w-full p-2 border rounded-md outline-none focus:ring-2 focus:ring-gray-400'
 							/>
 							<ErrorMessage
 								name='password'
 								component='small'
-								className='text-red-500 mx-2'
+								className='text-red-500'
 							/>
 						</div>
+
 						<div className='text-center'>
 							<button
 								type='submit'
 								disabled={isSubmitting}
-								className='bg-black text-white py-2 px-3 rounded-md disabled:bg-gray-700 disabled:cursor-not-allowed'
+								className='w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition disabled:bg-gray-500 disabled:cursor-not-allowed'
 							>
 								{isSubmitting ? "Signing up..." : "Sign Up"}
 							</button>

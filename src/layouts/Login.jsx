@@ -6,22 +6,26 @@ import { useNavigate } from "react-router-dom";
 const Login = ({ tenantId }) => {
 	const [error, setError] = React.useState("");
 	const navigate = useNavigate();
+
 	const handleLogin = async (values) => {
 		try {
-			const responce = await axios.post(
+			const response = await axios.post(
 				"https://multi-tenancy-system-server-2.onrender.com/api/auth/login",
 				values,
 			);
-			localStorage.setItem("token", responce.data.token);
-			navigate(`/dashboard/${responce.data.token}`);
+			localStorage.setItem("token", response.data.token);
+			navigate(`/dashboard/${response.data.token}`);
 		} catch (err) {
 			setError(err.response.data.error);
 		}
 	};
+
 	return (
-		<div className='w-[100%]'>
-			<h1 className='font-bold text-center'>Log In to Your Organization </h1>
-			{error && <p className='text-red-500 text-center'>{error}</p>}
+		<div className='w-full max-w-md mx-auto bg-white p-3 rounded-lg'>
+			<h1 className='font-bold text-2xl text-center mb-4 text-gray-800'>
+				Log In to Your Organization
+			</h1>
+			{error && <p className='text-red-500 text-center mb-3'>{error}</p>}
 			<Formik
 				initialValues={{
 					email: "",
@@ -62,58 +66,57 @@ const Login = ({ tenantId }) => {
 				}}
 			>
 				{({ isSubmitting }) => (
-					<Form>
-						<div className='w-full flex flex-col gap-2'>
-							<label htmlFor='' className='px-2 font-bold '>
+					<Form className='space-y-4'>
+						<div>
+							<label className='block text-gray-700 font-semibold mb-1'>
 								Organization Name
 							</label>
 							<Field
 								type='text'
 								name='organizationName'
-								className='pt-2 px-3 border-b outline-0 border-black'
+								className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400'
 							/>
 							<ErrorMessage
 								name='organizationName'
 								component='small'
-								className='text-red-500 mx-2'
+								className='text-red-500'
 							/>
 						</div>
-
-						<div className='w-full flex flex-col gap-2'>
-							<label htmlFor='' className='px-2 font-bold '>
+						<div>
+							<label className='block text-gray-700 font-semibold mb-1'>
 								Your Email
 							</label>
 							<Field
 								type='email'
 								name='email'
-								className='pt-2 px-3 border-b outline-0 border-black'
+								className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400'
 							/>
 							<ErrorMessage
 								name='email'
 								component='small'
-								className='text-red-500 mx-2'
+								className='text-red-500'
 							/>
 						</div>
-						<div className='w-full flex flex-col gap-2 mb-3'>
-							<label htmlFor='' className='px-2 font-bold '>
+						<div>
+							<label className='block text-gray-700 font-semibold mb-1'>
 								Password
 							</label>
 							<Field
 								type='password'
 								name='password'
-								className='pt-2 px-3 border-b outline-0 border-black'
+								className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400'
 							/>
 							<ErrorMessage
 								name='password'
 								component='small'
-								className='text-red-500 mx-2'
+								className='text-red-500'
 							/>
 						</div>
 						<div className='text-center'>
 							<button
 								type='submit'
 								disabled={isSubmitting}
-								className='bg-black text-white py-2 px-3 rounded-md disabled:bg-gray-700 disabled:cursor-not-allowed'
+								className='w-full bg-gray-900 text-white py-2 px-4 rounded-md font-semibold hover:bg-gray-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed'
 							>
 								{isSubmitting ? "Logging in..." : "Login"}
 							</button>

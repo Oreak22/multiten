@@ -9,32 +9,13 @@ const Dashboard = () => {
 	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState([]);
 	const [error, setError] = useState("");
-	const [SearchInput, setSearchInput] = useState("");
+	const [searchInput, setSearchInput] = useState("");
 	const { token } = useParams();
 	const [searchResult, setSearchResult] = useState([]);
 	const [showAddUser, setShowAddUser] = useState(false);
 	const [deleting, setDeleting] = useState(false);
-	const [success, setSuccess] = useState("");
 	const navigate = useNavigate();
 
-	const otherUsers = useMemo(async () => {
-		if (SearchInput.length > 0) {
-			return setSearchResult([data]);
-		} else {
-			try {
-				const others = await axios.get(
-					"https://multi-tenancy-system-server-2.onrender.com/api/users/fetchall",
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					},
-				);
-				const filteredData = await others.data.filter(
-					(user) => user.email !== data.email,
-				);
-				return setSearchResult(filteredData);
-			} catch (err) {}
-		}
-	}, [SearchInput, deleting, showAddUser]);
 	useEffect(() => {
 		setLoading(true);
 		axios
@@ -45,116 +26,139 @@ const Dashboard = () => {
 				},
 			)
 			.then((response) => {
-				// handle success
 				setData(response.data);
-				setLoading(false);
-				localStorage.multiten = JSON.stringify(response.data);
+				localStorage.setItem("multiten", JSON.stringify(response.data));
 			})
 			.catch((error) => {
-				// handle error
-				setError(error.response.data.error);
-				if (error.response.data.error === "Invalid or expired token")
+				setError(error.response?.data?.error || "An error occurred");
+				if (error.response?.data?.error === "Invalid or expired token")
 					navigate("/");
-				setLoading(false);
 			})
-			.finally(() => {
-				// always executed
-			});
-	}, []);
+			.finally(() => setLoading(false));
+	}, [navigate, token]);
+
+	useEffect(() => {
+		if (searchInput.length > 0) {
+			setSearchResult(data.filter((user) => user.email.includes(searchInput)));
+		} else {
+			axios
+				.get(
+					"https://multi-tenancy-system-server-2.onrender.com/api/users/fetchall",
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					},
+				)
+				.then((response) => {
+					setSearchResult(
+						response.data.filter((user) => user.email !== data.email),
+					);
+				})
+				.catch(() => {});
+		}
+	}, [searchInput, deleting, showAddUser, token, data]);
 
 	const handleDeleteUser = async (userId) => {
 		setDeleting(true);
 		try {
-			const del = await axios.delete(
+			await axios.delete(
 				`https://multi-tenancy-system-server-2.onrender.com/api/users/delete/${userId}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				},
 			);
-		} catch (err) {
+		} catch {
 		} finally {
 			setDeleting(false);
 		}
 	};
 
-	if (loading || error) {
+	if (loading) {
 		return (
-			<div className='w-full h-screen flex justify-center items-center align-middle'>
-				<div className={`${error ? "text-red-500" : "text-blue-500"}`}>
-					{" "}
-					{loading ? "Loading.." : error}.
-				</div>
-			</div>
-		);
-	} else {
-		return (
-			<div className='flex h-screen'>
-				<SideBar />
-				<div className='flex-1 p-6 bg-gray-100'>
-					<h1 className='text-2xl font-bold mb-4'>Dashboard</h1>
-					<div className=''>
-						Welcome <span className='font-bold text-blue-500'>{data.name}</span>
-						.
-					</div>
-					<div className='mt-4'>
-						<h3 className='font-bold text-blue-500'>Search User email:</h3>
-						<div className='flex'>
-							<input
-								type='text'
-								onChange={(e) => setSearchInput(e.target.value)}
-								className='border-b-2 border-blue-500 p-2 w-full outline-none focus:outline-none focus:border-blue-500'
-							/>
-							<button
-								className='ml-3 hover:cursor-pointer p-3 hover:bg-blue-500 rounded-sm'
-								onClick={() => otherUsers}
-							>
-								<SearchIcon size={20} />
-							</button>
-						</div>
-						<div className='mt-2'>
-							<h2 className='font-bold'>Users on this space</h2>
-							{searchResult == [] ? (
-								<p className='mb-5'> No users found</p>
-							) : (
-								searchResult.map((user) => (
-									<div
-										className='capitalize border-b-2 border-blue-500 p-2 shadow-blue-600 shadow-sm mb-1 flex justify-between'
-										key={user.email}
-									>
-										{user.name}
-										{data.role == "ADMIN" && (
-											<div className='flex g-4'>
-												<button
-													className='bg-red-500 hover:bg-red-300 cursor-pointer px-3 py-2 text-white rounded-sm disabled:bg-red-200 disabled:cursor-not-allowed'
-													onClick={() => handleDeleteUser(user.id)}
-													disabled={deleting}
-												>
-													Delete
-												</button>
-											</div>
-										)}
-									</div>
-								))
-							)}
-						</div>
-						{data.role == "ADMIN" && (
-							<>
-								{showAddUser && <AddUser state={setShowAddUser} />}
-								<div className='text-center mt-5'>
-									<button
-										className='bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded'
-										onClick={() => setShowAddUser(!showAddUser)}
-									>
-										{showAddUser ? "Cancle" : "Add User"}
-									</button>
-								</div>
-							</>
-						)}
-					</div>
-				</div>
+			<div className='flex justify-center items-center h-screen text-blue-500 text-lg font-semibold'>
+				Loading...
 			</div>
 		);
 	}
+
+	if (error) {
+		return (
+			<div className='flex justify-center items-center h-screen text-red-500 text-lg font-semibold'>
+				{error}
+			</div>
+		);
+	}
+
+	return (
+		<div className='flex h-screen bg-gray-50'>
+			<SideBar />
+			<div className='flex-1 p-3 md:p-8 bg-white shadow-lg rounded-lg md:mx-6 my-4 overflow-y-auto'>
+				<h1 className='text-3xl font-bold text-gray-800 mb-6'>Dashboard</h1>
+				<p className='text-lg text-gray-700'>
+					Welcome,{" "}
+					<span className='font-semibold text-blue-600'>{data.name}</span>.
+				</p>
+
+				<div className='mt-8'>
+					<h3 className='text-lg font-semibold text-blue-600 mb-2'>
+						Search User Email:
+					</h3>
+					<div className='flex items-center border border-gray-300 rounded-md p-2'>
+						<input
+							type='text'
+							placeholder='Enter email...'
+							value={searchInput}
+							onChange={(e) => setSearchInput(e.target.value)}
+							className='flex-1 outline-none bg-transparent px-2 text-gray-700'
+						/>
+						<button className='p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600'>
+							<SearchIcon size={20} />
+						</button>
+					</div>
+				</div>
+
+				<div className='mt-6'>
+					<h2 className='text-xl font-semibold text-gray-800 mb-3'>
+						Users in this Space
+					</h2>
+					{searchResult.length === 0 ? (
+						<p className='text-gray-500 mt-2'>No users found</p>
+					) : (
+						searchResult.map((user) => (
+							<div
+								key={user.email}
+								className='flex justify-between items-center p-4 border border-gray-300 bg-white shadow-md rounded-lg mt-2'
+							>
+								<span className='text-gray-800 font-medium capitalize'>
+									{user.name}
+								</span>
+								{data.role === "ADMIN" && (
+									<button
+										className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed'
+										onClick={() => handleDeleteUser(user.id)}
+										disabled={deleting}
+									>
+										Delete
+									</button>
+								)}
+							</div>
+						))
+					)}
+				</div>
+
+				{data.role === "ADMIN" && (
+					<div className='text-center mt-8'>
+						{showAddUser && <AddUser state={setShowAddUser} />}
+						<button
+							className='bg-gray-700 hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-lg shadow-md'
+							onClick={() => setShowAddUser(!showAddUser)}
+						>
+							{showAddUser ? "Cancel" : "Add User"}
+						</button>
+					</div>
+				)}
+			</div>
+		</div>
+	);
 };
 
 export default Dashboard;
