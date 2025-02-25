@@ -13,7 +13,7 @@ const ResetPasswordToken = () => {
 	const handleReset = async (vlaue) => {
 		try {
 			const change = await axios
-				.post("http://localhost:3001/api/auth/changepassword", {
+				.post("https://multi-tenancy-system-server-2.onrender.com/api/auth/changepassword", {
 					newPassword: vlaue,
 					token,
 				})

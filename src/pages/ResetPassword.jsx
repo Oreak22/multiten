@@ -8,7 +8,7 @@ const ResetPassword = () => {
 	const handleReset = async (value) => {
 		try {
 			const response = await axios
-				.post("http://localhost:3001/api/auth/resetpassword", value)
+				.post("https://multi-tenancy-system-server-2.onrender.com/api/auth/resetpassword", value)
 				.then((response) => {
 					setresponse(response.data.status);
 				});

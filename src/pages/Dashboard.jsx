@@ -61,7 +61,7 @@ const Dashboard = () => {
 		setDeleting(true);
 		try {
 			await axios.delete(
-				`http://localhost:3001/api/users/delete/${userId}`,
+				`https://multi-tenancy-system-server-2.onrender.com/api/users/delete/${userId}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				},
